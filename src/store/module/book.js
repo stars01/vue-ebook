@@ -1,15 +1,15 @@
 const book = {
   state: {
-    test: 1
+    fileName: '',
+    // 控制菜单栏的隐藏显示
+    menuVisible: false
   },
   mutations: {
-    SET_TEST: (state, newTest) => {
-      state.test = newTest
-    }
-  },
-  actions: {
-    setTest: ({ commit, state }, newTest) => {
-      commit('SET_TEST', newTest)
+    SET_FILENAME: (state, fileName) => {
+      state.fileName = fileName
+    },
+    SET_MENUVISIBLE: (state, menuVisible) => {
+      state.menuVisible = menuVisible
     }
   },
   modules: {
