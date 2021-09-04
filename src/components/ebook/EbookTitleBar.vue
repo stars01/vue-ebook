@@ -48,7 +48,8 @@ export default {
     box-shadow: 0 px2rem(8) px2rem(8) rgba(0, 0, 0, .15);
     .left {
       flex: 0 0 px2rem(60);
-      @include center;
+      @include left;
+      margin-left: px2rem(15);
     }
     .right {
       flex: 1;
