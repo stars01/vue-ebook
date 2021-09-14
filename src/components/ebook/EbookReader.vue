@@ -7,7 +7,7 @@
 <script>
 import { ebookMixin } from '../../utils/mixin'
 import Epub from 'epubjs'
-import { getFontFamily, getFontSize, saveFontFamily, saveFontSize } from '../../utils/localStorage'
+import { getFontFamily, getFontSize, getTheme, saveFontFamily, saveFontSize, saveTheme } from '../../utils/localStorage'
 
 global.epub = Epub
 
@@ -64,10 +64,22 @@ export default {
         this.setDefaultFontFamily(font)
       }
     },
+    initTheme () {
+      let defaultTheme = getTheme(this.fileName)
+      if (!defaultTheme) {
+        defaultTheme = this.themeList[0].name
+        saveTheme(this.fileName, defaultTheme)
+      }
+      this.setDefaultTheme(defaultTheme)
+      this.themeList.forEach(theme => {
+        this.rendition.themes.register(theme.name, theme.style)
+      })
+      this.rendition.themes.select(defaultTheme)
+    },
     initEpub () {
       // nginx资源路径
       // 拼接路径
-      const url = 'http://192.168.31.193:9001/epub/' + this.fileName + '.epub'
+      const url = process.env.VUE_APP_RES_URL + '/epub/' + this.fileName + '.epub'
       this.book = new Epub(url)
       // book对象传入vuex
       this.setCurrentBook(this.book)
@@ -80,8 +92,10 @@ export default {
       })
       // 渲染电子书，判断默认字体
       this.rendition.display().then(() => {
+        this.initTheme()
         this.initFontSize()
         this.initFontFamily()
+        this.initGlobalStyle()
       })
       // 绑定自己的事件,判定点击开始与结束的偏移量与时间差
       this.rendition.on('touchstart', event => {
