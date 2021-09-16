@@ -7,10 +7,19 @@ $fontSize: 37.5;
   @return ($px / $fontSize) + rem;
 }
 
+// 水平垂直居中
 @mixin center {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+
+// 单行省略显示
+@mixin ellipsis {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 @mixin left {

@@ -1,5 +1,6 @@
 import { mapGetters, mapActions } from 'vuex'
 import { addCss, removeAllCss, themeList } from '../utils/book'
+import { saveLocation } from '../utils/localStorage'
 
 export const ebookMixin = {
   computed: {
@@ -72,6 +73,38 @@ export const ebookMixin = {
           addCss(`${process.env.VUE_APP_RES_URL}/theme/theme_default.css`)
           break
       }
+    },
+    // 章节跳转后更新进度条
+    refreshLocation () {
+      const currentLocation = this.currentBook.rendition.currentLocation()
+      const progress = this.currentBook.locations.percentageFromCfi(currentLocation.start.cfi)
+      this.setProgress(Math.floor(progress * 100))
+      this.setSection(currentLocation.start.index)
+      const startCfi = currentLocation.start.cfi
+      saveLocation(this.fileName, startCfi)
+    },
+    // 根据传入参数 转到应该显示的章节
+    display (target, cb) {
+      if (target) {
+        this.currentBook.rendition.display(target).then(() => {
+          // if (highlight) {
+          //   if (target.startsWith('epubcfi')) {
+          //     this.currentBook.getRange(target).then(range => {
+          //       this.currentBook.rendition.annotations.highlight(target, {}, (e) => {
+          //       })
+          //     })
+          //   }
+          // }
+          this.refreshLocation()
+          if (cb) cb()
+        })
+      } else {
+        this.currentBook.rendition.display().then(() => {
+          this.refreshLocation()
+          if (cb) cb()
+        })
+      }
+      // this.hideMenuVisible()
     }
   }
 }

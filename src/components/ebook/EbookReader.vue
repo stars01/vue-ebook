@@ -7,7 +7,7 @@
 <script>
 import { ebookMixin } from '../../utils/mixin'
 import Epub from 'epubjs'
-import { getFontFamily, getFontSize, getTheme, saveFontFamily, saveFontSize, saveTheme } from '../../utils/localStorage'
+import { getFontFamily, getFontSize, getLocation, getTheme, saveFontFamily, saveFontSize, saveTheme } from '../../utils/localStorage'
 
 global.epub = Epub
 
@@ -16,13 +16,17 @@ export default {
   methods: {
     prevPage () {
       if (this.rendition) {
-        this.rendition.prev()
+        this.rendition.prev().then(() => {
+          this.refreshLocation()
+        })
         this.hideTitleAndMenu()
       }
     },
     nextPage () {
       if (this.rendition) {
-        this.rendition.next()
+        this.rendition.next().then(() => {
+          this.refreshLocation()
+        })
         this.hideTitleAndMenu()
       }
     },
@@ -76,13 +80,7 @@ export default {
       })
       this.rendition.themes.select(defaultTheme)
     },
-    initEpub () {
-      // nginx资源路径
-      // 拼接路径
-      const url = process.env.VUE_APP_RES_URL + '/epub/' + this.fileName + '.epub'
-      this.book = new Epub(url)
-      // book对象传入vuex
-      this.setCurrentBook(this.book)
+    initRendition () {
       // 渲染ebook,绑定dom只能识别id
       this.rendition = this.book.renderTo('read', {
         width: innerWidth,
@@ -91,12 +89,25 @@ export default {
         method: 'default'
       })
       // 渲染电子书，判断默认字体
-      this.rendition.display().then(() => {
+      const location = getLocation(this.fileName)
+      this.display(location, () => {
         this.initTheme()
         this.initFontSize()
         this.initFontFamily()
         this.initGlobalStyle()
       })
+      // 解决阅读器不能更换字体
+      this.rendition.hooks.content.register(contents => {
+        Promise.all([
+          // 手动的添加样式文件,传入值是url
+          contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/cabin.css`),
+          contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/daysOne.css`),
+          contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/montserrat.css`),
+          contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/tangerine.css`)
+        ]).then(() => {})
+      })
+    },
+    initGesture () {
       // 绑定自己的事件,判定点击开始与结束的偏移量与时间差
       this.rendition.on('touchstart', event => {
         this.touchstartX = event.changedTouches[0].clientX
@@ -114,20 +125,27 @@ export default {
           this.toggleTitleAndMenu()
         }
         // 声明事件监听的时候设置为主动事件监听,不传递事件
-        window.addEventListener('touchmove', function (event) {
-          event.preventDefault()
-        }, { passive: false })
+        window.addEventListener('touchstart', { passive: false })
         event.stopPropagation()
       })
-      // 解决阅读器不能更换字体
-      this.rendition.hooks.content.register(contents => {
-        Promise.all([
-          // 手动的添加样式文件,传入值是url
-          contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/cabin.css`),
-          contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/daysOne.css`),
-          contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/montserrat.css`),
-          contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/tangerine.css`)
-        ]).then(() => {})
+    },
+    initEpub () {
+      // nginx资源路径
+      // 拼接路径
+      const url = process.env.VUE_APP_RES_URL + '/epub/' + this.fileName + '.epub'
+      this.book = new Epub(url)
+      // book对象传入vuex
+      this.setCurrentBook(this.book)
+
+      this.initRendition()
+      this.initGesture()
+
+      this.book.ready.then(() => {
+        return this.book.locations.generate(750 * (window.innerWidth / 375) * (getFontSize(this.fileName) / 16))
+      }).then(location => {
+        // 分页
+        this.setBookAvailable(true)
+        this.refreshLocation()
       })
     }
   },

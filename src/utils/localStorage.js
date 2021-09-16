@@ -66,6 +66,7 @@ export function getLocation (fileName) {
   return getBookObject(fileName, 'location')
 }
 
+// 章节信息
 export function saveLocation (fileName, location) {
   setBookObject(fileName, 'location', location)
 }
