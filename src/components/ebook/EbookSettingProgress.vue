@@ -34,15 +34,17 @@ import { ebookMixin } from '../../utils/mixin'
 export default {
   mixins: [ebookMixin],
   computed: {
+    // 计算进度
     getSectionName () {
-      if (this.section) {
-        const sectionInfo = this.currentBook.section(this.section)
-        if (sectionInfo && sectionInfo.href) {
-          return this.currentBook.navigation.get(sectionInfo.href).label
-          // return this.navigation[this.section].label
-        }
-      }
-      return ''
+      // if (this.section) {
+      //   const sectionInfo = this.currentBook.section(this.section)
+      //   if (sectionInfo && sectionInfo.href && this.currentBook && this.currentBook.navigation) {
+      //     return this.currentBook.navigation.get(sectionInfo.href).label
+      //     // return this.navigation[this.section].label
+      //   }
+      // }
+      // return ''
+      return this.section ? this.navigation[this.section].label : ''
     }
   },
   methods: {
@@ -66,7 +68,6 @@ export default {
       this.$refs.progress.style.backgroundSize = `${this.progress}% 100%`
     },
     prevSection () {
-      console.log('prev')
       if (this.section > 0 && this.bookAvailable) {
         this.setSection(this.section - 1).then(() => {
           this.displaySection()
@@ -74,7 +75,6 @@ export default {
       }
     },
     nextSection () {
-      console.log('next')
       if (this.section < this.currentBook.spine.length - 1 && this.bookAvailable) {
         this.setSection(this.section + 1).then(() => {
           this.displaySection()

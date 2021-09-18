@@ -12,7 +12,7 @@ export default {
 // 根据屏幕宽度计算字体大小
 document.addEventListener('DOMContentLoaded', () => {
   let fontSize = window.innerWidth / 10
-  fontSize = fontSize > 40 ? 40 : fontSize
+  fontSize = fontSize > 50 ? 50 : fontSize
   const html = document.querySelector('html')
   html.style.fontSize = fontSize + 'px'
 })

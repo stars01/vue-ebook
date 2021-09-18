@@ -77,11 +77,13 @@ export const ebookMixin = {
     // 章节跳转后更新进度条
     refreshLocation () {
       const currentLocation = this.currentBook.rendition.currentLocation()
-      const progress = this.currentBook.locations.percentageFromCfi(currentLocation.start.cfi)
-      this.setProgress(Math.floor(progress * 100))
-      this.setSection(currentLocation.start.index)
-      const startCfi = currentLocation.start.cfi
-      saveLocation(this.fileName, startCfi)
+      if (currentLocation && currentLocation.start) {
+        const progress = this.currentBook.locations.percentageFromCfi(currentLocation.start.cfi)
+        this.setProgress(Math.floor(progress * 100))
+        this.setSection(currentLocation.start.index)
+        const startCfi = currentLocation.start.cfi
+        saveLocation(this.fileName, startCfi)
+      }
     },
     // 根据传入参数 转到应该显示的章节
     display (target, cb) {
@@ -105,6 +107,13 @@ export const ebookMixin = {
         })
       }
       // this.hideMenuVisible()
+    },
+    // 关闭显示的设置栏
+    hideTitleAndMenu () {
+      // this.$store.dispatch('setMenuVisible', false)
+      this.setMenuVisible(false)
+      this.setSettingVisible(-1)
+      this.setFontFamilyVisible(false)
     }
   }
 }

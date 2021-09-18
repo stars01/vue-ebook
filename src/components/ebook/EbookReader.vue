@@ -8,6 +8,7 @@
 import { ebookMixin } from '../../utils/mixin'
 import Epub from 'epubjs'
 import { getFontFamily, getFontSize, getLocation, getTheme, saveFontFamily, saveFontSize, saveTheme } from '../../utils/localStorage'
+import { flatten } from '../../utils/book'
 
 global.epub = Epub
 
@@ -37,12 +38,6 @@ export default {
         this.setFontFamilyVisible(false)
       }
       this.setMenuVisible(!this.menuVisible)
-    },
-    hideTitleAndMenu () {
-      // this.$store.dispatch('setMenuVisible', false)
-      this.setMenuVisible(false)
-      this.setSettingVisible(-1)
-      this.setFontFamilyVisible(false)
     },
     initFontSize () {
       let fontSize = getFontSize(this.fileName)// eslint-disable-line
@@ -129,6 +124,33 @@ export default {
         event.stopPropagation()
       })
     },
+    // 获取图书信息
+    parseBook () {
+      // 封面
+      this.book.loaded.cover.then(cover => {
+        this.book.archive.createUrl(cover).then(url => {
+          this.setCover(url)
+        })
+      })
+      // 书名，作者
+      this.book.loaded.metadata.then(metadata => {
+        this.setMetadata(metadata)
+      })
+      // 目录
+      this.book.loaded.navigation.then(nav => {
+        const navItem = flatten(nav.toc)
+
+        // 依据parent的值，进行分级
+        function find (item, level = 0) {
+          return !item.parent ? level : find(navItem.filter(parentItem => parentItem.id === item.parent)[0], ++level)
+        }
+
+        navItem.forEach(item => {
+          item.level = find(item)
+        })
+        this.setNavigation(navItem)
+      })
+    },
     initEpub () {
       // nginx资源路径
       // 拼接路径
@@ -139,6 +161,7 @@ export default {
 
       this.initRendition()
       this.initGesture()
+      this.parseBook()
 
       this.book.ready.then(() => {
         return this.book.locations.generate(750 * (window.innerWidth / 375) * (getFontSize(this.fileName) / 16))
