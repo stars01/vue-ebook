@@ -1,38 +1,38 @@
 <template>
   <div class="ebook-slide-bookmark">
     <div class="slide-bookmark-title">{{$t('book.bookmark')}} · {{bookmark ? bookmark.length : 0}}</div>
-    <!-- <scroll class="slide-bookmark-list" :top="48" :bottom="48">
+    <scroll class="slide-bookmark-list" :top="48" :bottom="48">
       <div class="slide-bookmark-item" v-for="(item, index) in bookmark" :key="index" @click="displayBookmark(item.cfi)">
         <div class="slide-bookmark-item-icon">
-          <div class="icon-bookmark"></div>
+          <div class="icon-bookmark-14"></div>
         </div>
         <div class="slide-bookmark-item-text">{{item.text}}</div>
       </div>
-    </scroll> -->
+    </scroll>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
-// import Scroll from '../common/Scroll'
+import Scroll from '../common/Scroll'
 import { getBookmark } from '../../utils/localStorage'
 import { ebookMixin } from '../../utils/mixin'
 
 export default {
   mixins: [ebookMixin],
-  // components: {
-  //   Scroll
-  // },
+  components: {
+    Scroll
+  },
   data () {
     return {
       bookmark: null
     }
   },
   methods: {
-    // displayBookmark (target) {
-    //   this.display(target, () => {
-    //     this.hideTitleAndMenu()
-    //   })
-    // }
+    displayBookmark (target) {
+      this.display(target, () => {
+        this.hideTitleAndMenu()
+      })
+    }
   },
   mounted () {
     this.bookmark = getBookmark(this.fileName)
@@ -64,7 +64,7 @@ export default {
         .slide-bookmark-item-icon {
           flex: 0 0 px2rem(29);
           @include left;
-          .icon-bookmark {
+          .icon-bookmark-14 {
             width: px2rem(20);
             height: px2rem(20);
             font-size: px2rem(12);
@@ -77,7 +77,7 @@ export default {
           font-size: px2rem(14);
           line-height: px2rem(15);
           max-height: px2rem(45);
-          // @include ellipsis2(3);
+          @include ellipsis2(3);
         }
       }
     }

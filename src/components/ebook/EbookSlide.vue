@@ -33,6 +33,7 @@
 <script>
 import { ebookMixin } from '../../utils/mixin'
 import EbookSlideContents from './EbookSlideContents.vue'
+import EbookSlideBookmark from './EbookSlideBookmark.vue'
 import EbookLoading from './EbookLoading.vue'
 
 export default {
@@ -43,7 +44,8 @@ export default {
   data () {
     return {
       currentTab: 1,
-      content: EbookSlideContents
+      content: EbookSlideContents,
+      bookmark: EbookSlideBookmark
     }
   },
   methods: {

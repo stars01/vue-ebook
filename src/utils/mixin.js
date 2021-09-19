@@ -1,6 +1,6 @@
 import { mapGetters, mapActions } from 'vuex'
 import { addCss, removeAllCss, themeList } from '../utils/book'
-import { saveLocation } from '../utils/localStorage'
+import { getBookmark, saveLocation } from '../utils/localStorage'
 
 export const ebookMixin = {
   computed: {
@@ -74,8 +74,8 @@ export const ebookMixin = {
           break
       }
     },
-    // 章节跳转后更新进度条
     refreshLocation () {
+      // 跳转后更新进度条
       const currentLocation = this.currentBook.rendition.currentLocation()
       if (currentLocation && currentLocation.start) {
         const progress = this.currentBook.locations.percentageFromCfi(currentLocation.start.cfi)
@@ -83,6 +83,18 @@ export const ebookMixin = {
         this.setSection(currentLocation.start.index)
         const startCfi = currentLocation.start.cfi
         saveLocation(this.fileName, startCfi)
+        // 判断书签
+        const bookmark = getBookmark(this.fileName)
+        if (bookmark) {
+          // 判断书签中是否存在当前页
+          if (bookmark.some(item => item.cfi === startCfi)) {
+            this.setIsBookmark(true)
+          } else {
+            this.setIsBookmark(false)
+          }
+        } else {
+          this.setIsBookmark(false)
+        }
       }
     },
     // 根据传入参数 转到应该显示的章节
