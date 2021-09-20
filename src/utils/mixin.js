@@ -29,6 +29,10 @@ export const ebookMixin = {
     // 主题信息查询
     themeList () {
       return themeList(this)
+    },
+    // 计算进度
+    getSectionName () {
+      return this.section ? this.navigation[this.section].label : ''
     }
   },
   methods: {
@@ -79,14 +83,15 @@ export const ebookMixin = {
       const currentLocation = this.currentBook.rendition.currentLocation()
       if (currentLocation && currentLocation.start) {
         const progress = this.currentBook.locations.percentageFromCfi(currentLocation.start.cfi)
+        const startCfi = currentLocation.start.cfi
         this.setProgress(Math.floor(progress * 100))
         this.setSection(currentLocation.start.index)
-        const startCfi = currentLocation.start.cfi
         saveLocation(this.fileName, startCfi)
+        console.log(startCfi)
         // 判断书签
         const bookmark = getBookmark(this.fileName)
         if (bookmark) {
-          // 判断书签中是否存在当前页
+          // 判断书签中是否存在当前页，显示书签
           if (bookmark.some(item => item.cfi === startCfi)) {
             this.setIsBookmark(true)
           } else {
@@ -94,6 +99,19 @@ export const ebookMixin = {
           }
         } else {
           this.setIsBookmark(false)
+        }
+        // 计算总页数
+        if (this.pagelist) {
+          const totalPage = this.pagelist.length
+          const currentPage = currentLocation.start.location
+          // 如果有当前页数信息，写入Paginate
+          if (currentPage && currentPage > 0) {
+            this.setPaginate(currentPage + ' / ' + totalPage)
+          } else {
+            this.setPaginate('')
+          }
+        } else {
+          this.setPaginate('')
         }
       }
     },

@@ -41,6 +41,7 @@ export default {
     }
   },
   watch: {
+    // 监听offsetY的值 书签功能
     offsetY (v) {
       if (!this.bookAvailable || this.menuVisible || this.settingVisible >= 0) {
         return
@@ -98,7 +99,6 @@ export default {
           cfi: currentLocation.start.cfi,
           text: text
         })
-        console.log(this.bookmark)
         saveBookmark(this.fileName, this.bookmark)
       })
     },

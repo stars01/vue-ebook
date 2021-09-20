@@ -1,6 +1,8 @@
 <template>
   <div class="ebook" ref="ebook">
       <ebook-reader></ebook-reader>
+      <ebook-header></ebook-header>
+      <ebook-footer></ebook-footer>
       <ebook-title-bar></ebook-title-bar>
       <ebook-menu></ebook-menu>
       <ebook-bookmark></ebook-bookmark>
@@ -13,6 +15,8 @@ import EbookReader from '../../components/ebook/EbookReader.vue'
 import EbookTitleBar from '../../components/ebook/EbookTitleBar.vue'
 import EbookMenu from '../../components/ebook/EbookMenu.vue'
 import EbookBookmark from '../../components/ebook/EbookBookmark.vue'
+import EbookHeader from '../../components/ebook/EbookHeader.vue'
+import EbookFooter from '../../components/ebook/EbookFooter.vue'
 import { ebookMixin } from '../../utils/mixin'
 export default {
   mixins: [ebookMixin],
@@ -20,7 +24,9 @@ export default {
     EbookReader,
     EbookTitleBar,
     EbookMenu,
-    EbookBookmark
+    EbookBookmark,
+    EbookHeader,
+    EbookFooter
   },
   watch: {
     // 监听用户下拉屏幕时滚动条的y轴数值
