@@ -66,14 +66,14 @@ export default {
     }
   },
   methods: {
-  //   search() {
-  //     this.$router.push({
-  //       path: '/store/list',
-  //       query: {
-  //         keyword: this.searchText
-  //       }
-  //     })
-  //   },
+    search () {
+      this.$router.push({
+        path: '/store/list',
+        query: {
+          keyword: this.searchText
+        }
+      })
+    },
     showFlapCard () {
       this.setFlapCardVisible(true)
     },

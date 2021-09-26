@@ -23,10 +23,20 @@ const routes = [
     component: () => import('../views/store/index.vue'),
     // 重定向
     redirect: '/store/home',
-    children: [{
-      path: 'home',
-      component: () => import('../views/store/StoreHome')
-    }]
+    children: [
+      {
+        path: 'home',
+        component: () => import('../views/store/StoreHome')
+      },
+      {
+        path: 'list',
+        component: () => import('../views/store/StoreList')
+      },
+      {
+        path: 'detail',
+        component: () => import('../views/store/StoreDetail')
+      }
+    ]
   }
 ]
 

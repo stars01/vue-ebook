@@ -26,7 +26,7 @@ export default {
   mixins: [ebookMixin],
   methods: {
     bark () {
-      console.log('bark')
+      this.$router.go(-1)
     }
   }
 }

@@ -15,10 +15,17 @@ export const storeHomeMixin = {
       'setOffsetY',
       'setHotSearchOffsetY',
       'setFlapCardVisible'
-    ])
-    // showBookDetail (book) {
-    //   gotoBookDetail(this, book)
-    // }
+    ]),
+    showBookDetail (book) {
+      // gotoBookDetail(this, book)
+      this.$router.push({
+        path: '/store/detail',
+        query: {
+          fileName: book.fileName,
+          category: book.categoryText
+        }
+      })
+    }
   }
 }
 
