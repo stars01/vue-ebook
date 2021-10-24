@@ -86,7 +86,7 @@ export default {
       if (this.hotSearchVisible) {
         this.hideHotSearch()
       } else {
-        // this.$router.push('/store/shelf')
+        this.$router.push('/store/shelf')
       }
     },
     showHotSearch () {

@@ -64,6 +64,7 @@ export function computeId (list) {
   })
 }
 
+// 跳转到详情页 封装
 export function gotoBookDetail (vue, book) {
   vue.$router.push({
     path: '/store/detail',

@@ -16,6 +16,7 @@ import { ebookMixin } from '../../utils/mixin'
 import Epub from 'epubjs'
 import { getFontFamily, getFontSize, getLocation, getTheme, saveFontFamily, saveFontSize, saveTheme } from '../../utils/localStorage'
 import { flatten } from '../../utils/book'
+import { getLocalForage } from '../../utils/localForage'
 
 global.epub = Epub
 
@@ -233,10 +234,8 @@ export default {
         this.setNavigation(navItem)
       })
     },
-    initEpub () {
-      // nginx资源路径
-      // 拼接路径
-      const url = process.env.VUE_APP_RES_URL + '/epub/' + this.fileName + '.epub'
+    initEpub (url) {
+      // 传入url地址，还可以传入blob对象
       this.book = new Epub(url)
       // book对象传入vuex
       this.setCurrentBook(this.book)
@@ -284,12 +283,23 @@ export default {
   },
   mounted () {
     // 将字符串按 "|" 进行分割，通过 "/"连在一起
-    if (this.$route.params.fileName) {
-      const fileName = this.$route.params.fileName.split('|').join('/')
-      this.setFileName(fileName).then(() => {
-        this.initEpub()
-      })
-    }
+    const books = this.$route.params.fileName.split('|')
+    const fileName = books[1]
+    getLocalForage(fileName, (err, blob) => {
+      if (!err && blob) {
+        // console.log('找到了缓存')
+        this.setFileName(books.join('/')).then(() => {
+          this.initEpub(blob)
+        })
+      } else {
+        // console.log('没有缓存,网络获取')
+        // 拼接路径
+        const url = process.env.VUE_APP_RES_URL + '/epub/' + this.fileName + '.epub'
+        this.setFileName(books.join('/')).then(() => {
+          this.initEpub(url)
+        })
+      }
+    })
   }
 }
 
