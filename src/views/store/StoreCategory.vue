@@ -1,15 +1,22 @@
 <!-- 书架组件 -->
 <template>
   <div class="store-shelf">
-    <shelf-title :title="$t('shelf.title')"></shelf-title>
+    <!-- 标题 -->
+    <shelf-title :title="shelfCategory.title"></shelf-title>
     <scroll class="store-shelf-scroll-wrapper"
             :top="0"
             :bottom="scrollBottom"
             @onScroll="onScroll"
-            ref="scroll">
-      <shelf-search></shelf-search>
-      <shelf-list :data="shelfList"></shelf-list>
+            ref="scroll"
+            v-if="ifShowList">
+            <!-- 分类列表 -->
+      <shelf-list :data="shelfCategory.itemList" :top="42"></shelf-list>
     </scroll>
+    <!-- 分类列表数据为空时展示内容 -->
+    <div class="store-shelf-empty-view" v-else>
+      {{$t('shelf.groupNone')}}
+    </div>
+    <!-- 底部菜单组件 -->
     <shelf-footer></shelf-footer>
   </div>
 </template>
@@ -18,7 +25,6 @@
 import ShelfTitle from '../../components/shelf/ShelfTitle'
 import { storeShelfMixin } from '../../utils/mixin'
 import Scroll from '../../components/common/Scroll'
-import ShelfSearch from '../../components/shelf/ShelfSearch'
 import ShelfList from '../../components/shelf/ShelfList'
 import ShelfFooter from '../../components/shelf/ShelfFooter'
 
@@ -27,7 +33,6 @@ export default {
   components: {
     Scroll,
     ShelfTitle,
-    ShelfSearch,
     ShelfList,
     ShelfFooter
   },
@@ -36,8 +41,18 @@ export default {
     isEditMode (isEditMode) {
       this.scrollBottom = isEditMode ? 48 : 0
       this.$nextTick(() => {
-        this.$refs.scroll.refresh()
+        // 刷新滚动条，使得设置生效
+        if (this.$refs.scroll) {
+          this.$refs.scroll.refresh()
+        }
       })
+    }
+  },
+  computed: {
+    ifShowList () {
+      // 分类列表展示的条件
+      return this.shelfCategory.itemList &&
+        this.shelfCategory.itemList.length > 0
     }
   },
   data () {
@@ -48,16 +63,16 @@ export default {
   methods: {
     // 滚动页面的监听事件，ShelfTitle和ShelfSearch组件会进行监听
     onScroll (offsetY) {
+      // 当列表发生滚动时，设置vuex中的offsetY
+      // offsetY的变更会触发ShelfTitle组件的watch生效
       this.setOffsetY(offsetY)
     }
   },
   mounted () {
-    // 获取书架列表数据
-    this.getShelfList()
-    // 初始化书架分类数据
-    this.setShelfCategory([])
-    // 设置vuex的currentType为1，表示当前位于书架，影响ShelfTitle状态
-    this.setCurrentType(1)
+    // 获取分类列表数据
+    this.getCategoryList(this.$route.query.title)
+    // 设置vuex的currentType为2，表示当前位于分类列表
+    this.setCurrentType(2)
   }
 }
 </script>
@@ -76,6 +91,16 @@ export default {
       top: 0;
       left: 0;
       z-index: 101;
+    }
+    .store-shelf-empty-view {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      font-size: px2rem(14);
+      color: #333;
+      @include center;
     }
   }
 </style>

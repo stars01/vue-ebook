@@ -50,6 +50,7 @@ export default {
         if (this.data.type === 1) {
           this.showBookDetail(this.data)
         } else if (this.data.type === 2) {
+          // 跳转分类页
           this.$router.push({
             path: '/store/category',
             query: {

@@ -9,7 +9,7 @@
            <div class="dialog-list-item-if" v-if="(item.edit === 2 && isInGroup) || item.edit !== 2 || !item.edit">
              <div class="dialog-list-item-text">{{item.title}}</div>
              <div class="dialog-list-icon-wrapper" v-if="isInGroup && shelfCategory.id === item.id">
-               <span class="icon-close-19"></span>
+               <span class="icon-check-2"></span>
              </div>
            </div>
       </div>
@@ -119,11 +119,11 @@ export default {
           }
           return this.shelfSelected.indexOf(book) < 0
         }))
-        .then(() => {
+        .then(() => { // 图书加入选定分组
           if (group && group.itemList) {
             group.itemList = [...group.itemList, ...this.shelfSelected]
           }
-          group.itemList.forEach((item, index) => {
+          group.itemList.forEach((item, index) => { // 添加分组的数据重新排序
             item.id = index + 1
           })
           this.simpleToast(this.$t('shelf.moveBookInSuccess').replace('$1', group.title))
@@ -137,10 +137,10 @@ export default {
       if (!this.newGroupName || this.newGroupName.length === 0) {
         return
       }
-      if (this.showNewGroup) {
+      if (this.showNewGroup) { // 修改分组名
         this.shelfCategory.title = this.newGroupName
         this.onComplete()
-      } else {
+      } else { // 新增分组
         const group = {
           id: this.shelfList[this.shelfList.length - 2].id + 1,
           itemList: [],
@@ -156,7 +156,7 @@ export default {
         })
       }
     },
-    onComplete () {
+    onComplete () { // 结束操作
       saveBookShelf(this.shelfList)
       this.hide()
       this.setIsEditMode(false)
@@ -188,13 +188,17 @@ export default {
       &:active {
         color: rgba(102, 102, 102, .5)
       }
-      .dialog-list-item-text {
+      .dialog-list-item-if{
+        display: flex;
         flex: 1;
-      }
-      .dialog-list-icon-wrapper {
-        flex: 0 0 px2rem(30);
-        color: $color-blue;
-        @include right;
+        .dialog-list-item-text {
+          flex: 1;
+        }
+        .dialog-list-icon-wrapper {
+          flex: 0 0 px2rem(30);
+          color: $color-blue;
+          @include right;
+        }
       }
     }
   }

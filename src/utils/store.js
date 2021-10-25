@@ -52,7 +52,7 @@ export function findBook (fileName) {
   return flatBookList(bookList).find(item => item.fileName === fileName)
 }
 
-export function computeId (list) {
+export function computeId (list) { // 重新计算id
   return list.map((book, index) => {
     if (book.type !== 3) {
       book.id = index + 1
