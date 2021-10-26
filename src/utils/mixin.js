@@ -174,8 +174,8 @@ export const ebookMixin = {
       // 跳转后更新进度条
       const currentLocation = this.currentBook.rendition.currentLocation()
       if (currentLocation && currentLocation.start) {
-        const progress = this.currentBook.locations.percentageFromCfi(currentLocation.start.cfi)
         const startCfi = currentLocation.start.cfi
+        const progress = this.currentBook.locations.percentageFromCfi(currentLocation.start.cfi)
         this.setProgress(Math.floor(progress * 100))
         this.setSection(currentLocation.start.index)
         saveLocation(this.fileName, startCfi)

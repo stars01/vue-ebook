@@ -51,7 +51,7 @@ export default {
     }
   },
   methods: {
-    getCategoryText(key) {
+    getCategoryText (key) {
       return `${categoryText(categoryList[key], this)}(${this.list[key].length})`
     },
     back () {

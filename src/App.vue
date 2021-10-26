@@ -5,15 +5,17 @@
 </template>
 
 <script>
-export default {
-
-}
+export default {}
 
 // 根据屏幕宽度计算字体大小
 document.addEventListener('DOMContentLoaded', () => {
-  let fontSize = window.innerWidth / 10
-  fontSize = fontSize > 50 ? 50 : fontSize
+  // 获取html元素
   const html = document.querySelector('html')
+  // 根据屏幕宽度动态计算fontSize
+  let fontSize = window.innerWidth / 10
+  // 当fontSize大于50时，设置最大值为50
+  fontSize = fontSize > 50 ? 50 : fontSize
+  // 设置html的fontSize属性，使rem生效，1rem = fontSize + 'px'
   html.style.fontSize = fontSize + 'px'
 })
 </script>

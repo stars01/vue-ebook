@@ -1,15 +1,14 @@
 <template>
-  <div class="store">
+  <div class="store" ref="storeRef">
     <router-view></router-view>
   </div>
 </template>
 
 <script>
-export default {
-
-}
+export default {}
 
 </script>
+
 <style lang="scss" rel="stylesheet/scss" scoped>
 @import '../../assets/styles/global';
 

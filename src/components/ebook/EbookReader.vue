@@ -3,6 +3,7 @@
     <div id="read"></div>
     <div class="ebook-reader-mask"
          @click="onMaskClick"
+         @touchstart="moveStart"
          @touchmove="move"
          @touchend="moveEnd"
          @mousedown.left="onMouseEnter"
@@ -68,6 +69,11 @@ export default {
       e.preventDefault()
       e.stopPropagation()
     },
+    moveStart (e) {
+      // 收集点击事件开始x轴位置与时间
+      this.touchstartX = e.changedTouches[0].clientX
+      this.touchstartTime = e.timeStamp
+    },
     // 触碰事件
     move (e) {
       let offsetY = 0
@@ -83,6 +89,14 @@ export default {
     moveEnd (e) {
       this.setOffsetY(0)
       this.firstOffsetY = null
+      // 根据点击事件结束x轴位置与时间，进行判断
+      this.offsetX = e.changedTouches[0].clientX - this.touchstartX
+      this.time = e.timeStamp - this.touchstartTime
+      if (this.time < 500 && this.offsetX > 40) {
+        this.prevPage()
+      } else if (this.time < 500 && this.offsetX < -40) {
+        this.nextPage()
+      }
     },
     onMaskClick (e) {
       if (this.mouseState && (this.mouseState === 2 || this.mouseState === 3)) {
@@ -185,28 +199,28 @@ export default {
         ]).then(() => {})
       })
     },
-    initGesture () {
-      // 绑定自己的事件,判定点击开始与结束的偏移量与时间差
-      this.rendition.on('touchstart', event => {
-        this.touchstartX = event.changedTouches[0].clientX
-        this.touchstartTime = event.timeStamp
-      })
-      this.rendition.on('touchend', event => {
-        this.offsetX = event.changedTouches[0].clientX - this.touchstartX
-        this.time = event.timeStamp - this.touchstartTime
-        // 实现滑动翻页，点击菜单栏
-        if (this.time < 500 && this.offsetX > 40) {
-          this.prevPage()
-        } else if (this.time < 500 && this.offsetX < -40) {
-          this.nextPage()
-        } else {
-          this.toggleTitleAndMenu()
-        }
-        // 声明事件监听的时候设置为主动事件监听,不传递事件
-        window.addEventListener('touchstart', { passive: false })
-        event.stopPropagation()
-      })
-    },
+    // initGesture () { // 初版滑动翻页
+    //   // 绑定自己的事件,判定点击开始与结束的偏移量与时间差
+    //   this.rendition.on('touchstart', event => {
+    //     this.touchstartX = event.changedTouches[0].clientX
+    //     this.touchstartTime = event.timeStamp
+    //   })
+    //   this.rendition.on('touchend', event => {
+    //     this.offsetX = event.changedTouches[0].clientX - this.touchstartX
+    //     this.time = event.timeStamp - this.touchstartTime
+    //     // 实现滑动翻页，点击菜单栏
+    //     if (this.time < 500 && this.offsetX > 40) {
+    //       this.prevPage()
+    //     } else if (this.time < 500 && this.offsetX < -40) {
+    //       this.nextPage()
+    //     } else {
+    //       this.toggleTitleAndMenu()
+    //     }
+    //     // 声明事件监听的时候设置为主动事件监听,不传递事件
+    //     window.addEventListener('touchstart', { passive: false })
+    //     event.stopPropagation()
+    //   })
+    // },
     // 获取图书信息
     parseBook () {
       // 封面
@@ -252,12 +266,15 @@ export default {
           nav.pagelist = []
         })
         locations.forEach(item => {
-          const loc = item.match(/\[(.*)\]!/)[1]
+          // const loc = item.match(/\[(.*)\]!/)[1]
+          const loc = item.match(/\[A(.*)\]!/)[1]
+          // console.log(loc)
           this.navigation.forEach(nav => {
             if (nav.href) {
-              const href = nav.href.match(/^(.*)\.html$/)
+              // const href = nav.href.match(/^(.*)\.html$/)
+              const href = nav.href.match(/html\/(.*)\.xhtml$/)[1]
               if (href) {
-                if (href[1] === loc) {
+                if (href === loc) {
                   nav.pagelist.push(item)
                 }
               }
@@ -294,8 +311,9 @@ export default {
       } else {
         // console.log('没有缓存,网络获取')
         // 拼接路径
-        const url = process.env.VUE_APP_RES_URL + '/epub/' + this.fileName + '.epub'
         this.setFileName(books.join('/')).then(() => {
+          const url = process.env.VUE_APP_EPUB_URL + '/' + this.fileName + '.epub'
+          // console.log(url)
           this.initEpub(url)
         })
       }

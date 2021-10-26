@@ -79,7 +79,7 @@ export default {
           toast.updateText(text)
         })
       }).catch(function () { // 下载失败弹出弹窗
-        console.log('关闭')
+        // console.log('关闭')
         text = '缓存错误'
         toast.updateText(text)
         setTimeout(function () { toast.remove() }, 2000)
@@ -121,9 +121,16 @@ export default {
       }
     },
     removeSelected () {
-      this.shelfSelected.forEach(selected => {
-        this.setShelfList(this.shelfList.filter(book => book !== selected))
+      this.shelfSelected.forEach(selected => { // 从列表移除选中书籍
+        // 遍历选中书籍
+        this.setShelfList(this.shelfList.filter(book => {
+          if (book.itemList) {
+            book.itemList = book.itemList.filter(subBook => subBook !== selected)
+          }
+          return book !== selected
+        }))
       })
+      // console.log(this.shelfList)
       this.setShelfSelected([])
       this.onComplete()
     },
