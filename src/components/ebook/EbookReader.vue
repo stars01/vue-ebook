@@ -266,15 +266,15 @@ export default {
           nav.pagelist = []
         })
         locations.forEach(item => {
-          // const loc = item.match(/\[(.*)\]!/)[1]
+          // const loc = item.match(/\[(.*)\]!/)[1] // 只匹配章节
           const loc = item.match(/\[A(.*)\]!/)[1]
           // console.log(loc)
           this.navigation.forEach(nav => {
             if (nav.href) {
-              // const href = nav.href.match(/^(.*)\.html$/)
-              const href = nav.href.match(/html\/(.*)\.xhtml$/)[1]
+              // const href = nav.href.match(/^(.*)\.html$/) // 只匹配章节
+              const href = nav.href.match(/html\/(.*)\.xhtml$/)
               if (href) {
-                if (href === loc) {
+                if (href[1] === loc) {
                   nav.pagelist.push(item)
                 }
               }
